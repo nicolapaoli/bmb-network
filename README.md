@@ -1,4 +1,5 @@
-# BMB Network (Boss-Merchant-Beneficiary Network)
+
+# BMB-Network (Boss-Merchant-Beneficiary Network)
 
 *ie.nicolapaoli.bmbnetwork*
 
