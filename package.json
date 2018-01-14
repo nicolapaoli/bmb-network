@@ -1,0 +1,21 @@
+{
+  "name": "bmb-network",
+  "version": "0.0.1",
+  "description": "A simple network with Boss, Beneficiary and Merchant",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "author": "Nicola Paoli",
+  "email": "nicolapaoli.ie@gmail.com",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "composer-admin": "latest",
+    "composer-client": "latest",
+    "composer-common": "latest",
+    "composer-connector-embedded": "latest",
+    "chai": "latest",
+    "eslint": "latest",
+    "istanbul": "latest",
+    "mkdirp": "latest"
+  }
+}

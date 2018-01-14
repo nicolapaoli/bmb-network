@@ -1,0 +1,59 @@
+/**
+ * Access control rules
+ */
+
+ rule CreateAsset {
+   description: "Only Boss can create asset"
+   participant: "ie.nicolapaoli.bmbnetwork.Boss"
+   operation: CREATE
+   resource: "ie.nicolapaoli.bmbnetwork.GeneralAsset"
+   action: ALLOW
+ }
+
+ rule CreateAssetTransaction {
+   description: "Only Boss can access to the CreateAccess Transaction"
+   participant: "ie.nicolapaoli.bmbnetwork.Boss"
+   operation: ALL
+   resource: "ie.nicolapaoli.bmbnetwork.CreateAsset"
+   action: ALLOW
+ }
+
+ rule SendAsset {
+   description: "Only Beneficiary can update asset to send it to a merchant"
+   participant: "ie.nicolapaoli.bmbnetwork.Beneficiary"
+   operation: UPDATE
+   resource: "ie.nicolapaoli.bmbnetwork.GeneralAsset"
+   action: ALLOW
+ }
+
+ rule SendAssetTransaction {
+   description: "Only Beneficiary can send asset"
+   participant: "ie.nicolapaoli.bmbnetwork.Beneficiary"
+   operation: ALL
+   resource: "ie.nicolapaoli.bmbnetwork.SendAsset"
+   action: ALLOW
+ }
+
+ rule NetworkAdminUser {
+   description: "Newtork Admin should be able to create participants"
+   participant: "org.hyperledger.composer.system.NetworkAdmin"
+   operation: CREATE
+   resource: "ie.nicolapaoli.bmbnetwork.User"
+   action: ALLOW
+ }
+
+ rule DefaultRead {
+   description: "All participants can read all resources"
+   participant: "ANY"
+   operation: READ
+   resource: "ie.nicolapaoli.bmbnetwork.*"
+   action: ALLOW
+ }
+ 
+ rule NetworkAdminSystem {
+   description: "Everyone has full access to system resources"
+   participant: "ANY"
+   operation: ALL
+   resource: "org.hyperledger.composer.system.**"
+   action: ALLOW
+ }

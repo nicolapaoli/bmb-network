@@ -1,0 +1,58 @@
+/**
+ * This model file defines:
+ * 
+ * 3 Participants:
+ * - A Boss, who is allowed to create Assets
+ * - A Beneficiary, who is allowed to send an Asset to a Merchant
+ * - A Merchant, who receives the Assets
+ * 
+ * 1 Asset: 
+ * - GeneralAsset, that will be traded
+ *
+ * 2 Transactions:
+ * - CreateAssets, used by Boss
+ * - SendAsset, used by Beneficiary
+ * 
+ */
+
+namespace ie.nicolapaoli.bmbnetwork
+
+/**
+ * Participants
+ */
+abstract participant User identified by userID {
+  o String userID
+  o String name
+}
+
+participant Boss extends User {
+}
+
+participant Beneficiary extends User {
+}
+
+participant Merchant extends User {
+}
+
+/**
+ * Assets
+ */
+asset GeneralAsset identified by symbol {
+  o String symbol
+  o String name
+  --> Boss assetCreator
+  --> User assetOwner
+}
+
+/**
+ * Transactions
+ */
+transaction CreateAsset {
+  o String symbol
+  o String name
+}
+
+transaction SendAsset {
+  --> GeneralAsset assetToSend
+  --> Merchant newOwner
+}
