@@ -5,31 +5,58 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
 const MemoryCardStore = require('composer-common').MemoryCardStore;
-
 const path = require('path');
 
-const NS = 'ie.nicolapaoli.bmbnetwork';
-
 const cardStore = new MemoryCardStore();
+
+const connectionProfile = {
+    name: 'embedded',
+    type: 'embedded'
+};
+
 const adminCardName = 'admin';
 
-let adminConnection;
-let bossCard;
-let bossCardName = 'bossCard';
 
-module.exports.deployAndConnect = function() {
+module.exports.getAdminConnection = function(){
+
     let adminConnection;
-    let businessNetworkDefinition;
-    let businessNetworkConnection;
 
-    return getAdminConnection()
-        .then(function(connection) {
-            adminConnection = connection;
-            return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname,'..'));
+    const credentials = {
+        certificate: 'FAKE CERTIF',
+        privateKey: 'FAKE PK'
+    };
+
+    const deployerMetadata = {
+        version: 1,
+        userName: 'PeerAdmin',
+        roles: [ 'PeerAdmin', 'ChannelAdmin']
+    };
+
+    const deployerCard = new IdCard(deployerMetadata, connectionProfile);
+    deployerCard.setCredentials(credentials);
+    const deployerCardName = 'PeerAdmin';
+
+    adminConnection = new AdminConnection({
+        cardStore: cardStore
+    });
+
+    return adminConnection.importCard(deployerCardName, deployerCard)
+        .then(function() {
+            return adminConnection.connect(deployerCardName);
         })
+        .then(function(){
+            return adminConnection;
+        });
+};
+
+module.exports.deployBusinessNetwork = function(adminConnection){
+    let businessNetworkConnection;
+    let businessNetworkDefinition;
+
+    return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'))
         .then(function(definition) {
             businessNetworkDefinition = definition;
-            return adminConnection.install(businessNetworkDefinition.getName());
+            return adminConnection.install(definition.getName());
         })
         .then(function() {
             const startOptions = {
@@ -46,10 +73,7 @@ module.exports.deployAndConnect = function() {
             return adminConnection.importCard(adminCardName, adminCards.get('admin'));
         })
         .then(function() {
-            businessNetworkConnection = new BusinessNetworkConnection(
-                {
-                    cardStore: cardStore
-                });
+            businessNetworkConnection = new BusinessNetworkConnection({ cardStore: cardStore });
             return businessNetworkConnection.connect(adminCardName);
         })
         .then(function() {
@@ -57,43 +81,24 @@ module.exports.deployAndConnect = function() {
         });
 };
 
-/**
- * Install cards and create admin connection
- * @returns {Promise} Resolves with a AdminConnection
- */
-function getAdminConnection() {
-    if (adminConnection) {
-        return Promise.resolve(adminConnection);
-    }
-
-    const connectionProfile = {
-        name: 'embedded',
-        type: 'embedded'
-    };
-
-    const credentials = {
-        certificate: 'FAKE CERTIF',
-        privateKey: 'FAKE PK'
-    };
-
-    const deployerMetadata = {
+module.exports.importIdentityCard = function(adminConnection,cardName, identity, businessNetworkName) {
+    const metadata = {
+        userName: identity.userID,
         version: 1,
-        userName: 'PeerAdmin',
-        roles: ['PeerAdmin', 'ChannelAdmin']
+        enrollmentSecret: identity.userSecret,
+        businessNetwork: businessNetworkName
     };
+    const card = new IdCard(metadata, connectionProfile);
+    return adminConnection.importCard(cardName, card);
+};
 
-    const deployerCard = new IdCard(deployerMetadata, connectionProfile);
-    deployerCard.setCredentials(credentials);
-
-    const deployerCardName = 'deployer';
-
-    adminConnection = new AdminConnection({cardStore: cardStore});
-
-    return adminConnection.importCard(deployerCardName, deployerCard)
+module.exports.useIdentity = function useIdentity(businessNetworkConnection, cardName) {
+    return businessNetworkConnection.disconnect()
         .then(function() {
-            return adminConnection.connect(deployerCardName);
+            businessNetworkConnection = new BusinessNetworkConnection({cardStore: cardStore});
+            return businessNetworkConnection.connect(cardName);
         })
         .then(function() {
-            return adminConnection;
+            return businessNetworkConnection;
         });
-}
+};
