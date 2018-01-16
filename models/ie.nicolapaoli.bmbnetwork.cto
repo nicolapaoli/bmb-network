@@ -47,6 +47,9 @@ asset GeneralAsset identified by symbol {
 /**
  * Transactions
  */
+transaction SetupBMB {
+}
+
 transaction CreateAsset {
   o String symbol
   o String name

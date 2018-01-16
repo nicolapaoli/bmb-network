@@ -42,6 +42,14 @@
    action: ALLOW
  }
 
+ rule Setup {
+   description: "Newtork Admin should be able to setup participants"
+   participant: "org.hyperledger.composer.system.NetworkAdmin"
+   operation: ALL
+   resource: "ie.nicolapaoli.bmbnetwork.SetupBMB"
+   action: ALLOW
+ }
+
  rule DefaultRead {
    description: "All participants can read all resources"
    participant: "ANY"
