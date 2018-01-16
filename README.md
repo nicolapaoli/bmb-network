@@ -22,5 +22,6 @@ This is a simple network where three participants, a Boss, a Merchant and a Bene
 
 ---
 ## Transactions
+*   **SetupBMB** - To setup the first Scenario - *Only accessible by the Network Admin*
 *   **Create Asset** - To create a new asset - *Only accessible by the Boss*
 *   **Send Asset** - To send an asset to a Merchant - *Only accessible by the Beneficiary*
